@@ -1,2 +1,3 @@
 *.swp
-gosimpleblog
+**/server
+**/poster
