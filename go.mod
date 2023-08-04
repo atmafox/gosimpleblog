@@ -5,6 +5,7 @@ go 1.20
 require github.com/go-chi/chi/v5 v5.0.8
 
 require (
+	github.com/go-chi/chi v1.5.4 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/dig v1.17.0 // indirect
 	go.uber.org/fx v1.20.0 // indirect

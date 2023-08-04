@@ -1,4 +1,4 @@
 *.swp
-**/server
-**/poster
+**/server/server
+**/poster/poster
 NOTES
