@@ -53,7 +53,7 @@ func NewHTTPServer(p HTTPServerParams) (HTTPServerResult, error) {
 type RouterParams struct {
 	fx.In
 
-	Routes []Route `group:"routes"`
+	Handlers []Handler `group:"handlers"`
 }
 
 type RouterResult struct {
@@ -73,50 +73,50 @@ func ProvideRouter(p RouterParams) (RouterResult, error) {
 		http.Error(w, "Page not found", http.StatusNotFound)
 	})
 
-	for _, route := range p.Routes {
-		if route.Type() == "GET" {
-			r.Get(route.Pattern(), route.ServeHTTP)
+	for _, handler := range p.Handlers {
+		if handler.Type() == "GET" {
+			r.Get(handler.Pattern(), handler.ServeHTTP)
 		}
-		if route.Type() == "POST" {
-			r.Post(route.Pattern(), route.ServeHTTP)
+		if handler.Type() == "POST" {
+			r.Post(handler.Pattern(), handler.ServeHTTP)
 		}
 	}
 
 	return RouterResult{Router: r}, nil
 }
 
-type Route interface {
+type Handler interface {
 	http.Handler
 
 	Pattern() string
 	Type() string
 }
 
-type RouteParams struct {
+type HandlerParams struct {
 	fx.In
 
 	Log *zap.Logger
 }
 
-type RouteResult struct {
+type HandlerResult struct {
 	fx.Out
 
-	Route Route `group:"routes"`
+	Handler Handler `group:"handlers"`
 }
 
-type HomeRoute struct {
+type HomeHandler struct {
 	log *zap.Logger
 }
 
-func (h *HomeRoute) Pattern() string {
+func (h *HomeHandler) Pattern() string {
 	return "/"
 }
 
-func (h *HomeRoute) Type() string {
+func (h *HomeHandler) Type() string {
 	return "GET"
 }
 
-func (h *HomeRoute) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *HomeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
 	_, err := fmt.Fprintln(w, "Hello world!")
@@ -125,27 +125,27 @@ func (h *HomeRoute) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func NewHomeRoute(p RouteParams) (RouteResult, error) {
-	route := &HomeRoute{
+func NewHomeHandler(p HandlerParams) (HandlerResult, error) {
+	handler := &HomeHandler{
 		log: p.Log,
 	}
 
-	return RouteResult{Route: route}, nil
+	return HandlerResult{Handler: handler}, nil
 }
 
-type EchoRoute struct {
+type EchoHandler struct {
 	log *zap.Logger
 }
 
-func (h *EchoRoute) Pattern() string {
+func (h *EchoHandler) Pattern() string {
 	return "/"
 }
 
-func (h *EchoRoute) Type() string {
+func (h *EchoHandler) Type() string {
 	return "POST"
 }
 
-func (h *EchoRoute) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *EchoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
 	if _, err := io.Copy(w, r.Body); err != nil {
@@ -153,12 +153,12 @@ func (h *EchoRoute) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func NewEchoRoute(p RouteParams) (RouteResult, error) {
-	route := &EchoRoute{
+func NewEchoHandler(p HandlerParams) (HandlerResult, error) {
+	handler := &EchoHandler{
 		log: p.Log,
 	}
 
-	return RouteResult{Route: route}, nil
+	return HandlerResult{Handler: handler}, nil
 }
 
 func main() {
@@ -167,8 +167,8 @@ func main() {
 			zap.NewExample,
 			NewHTTPServer,
 			ProvideRouter,
-			NewHomeRoute,
-			NewEchoRoute,
+			NewHomeHandler,
+			NewEchoHandler,
 		),
 		fx.Invoke(
 			func(*http.Server) {},
