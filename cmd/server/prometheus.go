@@ -90,7 +90,7 @@ func NewRequestsTimer(p RequestsTimerParams) (RequestsTimerResult, error) {
 		prometheus.HistogramOpts{
 			Name:    "http_requests_duration_seconds",
 			Help:    "Histogram for the handler duration, partitioned by handler.",
-			Buckets: prometheus.ExponentialBuckets(0.1, 1.5, 5),
+			Buckets: prometheus.LinearBuckets(0.01, 0.1, 10),
 		},
 		[]string{"handler"},
 	)

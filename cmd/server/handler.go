@@ -47,6 +47,9 @@ func (h *HomeHandler) Type() string {
 }
 
 func (h *HomeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	t := prometheus.NewTimer(h.timer.WithLabelValues("/"))
+	defer t.ObserveDuration()
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
 	_, err := fmt.Fprintln(w, "Hello world!")
@@ -86,6 +89,9 @@ func (h *EchoHandler) Type() string {
 }
 
 func (h *EchoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	t := prometheus.NewTimer(h.timer.WithLabelValues("/"))
+	defer t.ObserveDuration()
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
 	if _, err := io.Copy(w, r.Body); err != nil {
