@@ -54,7 +54,7 @@ func (h *HomeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		h.log.Warn("failed to write hello world", zap.Error(err))
 	}
 
-	c, err := h.counter.Counter.GetMetricWith(prometheus.Labels{"handler": "/", "method": "GET", "status": "200"})
+	c, err := h.counter.GetMetricWith(prometheus.Labels{"handler": "/", "method": "GET", "status": "200"})
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Failed to increment counter:", err)
 	}
@@ -92,7 +92,7 @@ func (h *EchoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(os.Stderr, "Failed to handle request:", err)
 	}
 
-	c, err := h.counter.Counter.GetMetricWith(prometheus.Labels{"handler": "/", "method": "POST", "status": "200"})
+	c, err := h.counter.GetMetricWith(prometheus.Labels{"handler": "/", "method": "POST", "status": "200"})
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Failed to increment counter:", err)
 	}
