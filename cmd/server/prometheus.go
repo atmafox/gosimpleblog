@@ -62,7 +62,7 @@ func NewRequestsCounter(p RequestsCounterParams) (RequestsCounterResult, error) 
 		[]string{"handler", "method", "status"},
 	)
 
-	if err := p.Registry.Registry.Register(v); err != nil {
+	if err := p.Registry.Register(v); err != nil {
 		return RequestsCounterResult{}, err
 	}
 
@@ -95,7 +95,7 @@ func NewRequestsTimer(p RequestsTimerParams) (RequestsTimerResult, error) {
 		[]string{"handler"},
 	)
 
-	if err := p.Registry.Registry.Register(v); err != nil {
+	if err := p.Registry.Register(v); err != nil {
 		return RequestsTimerResult{}, err
 	}
 
