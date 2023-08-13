@@ -6,12 +6,15 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"go.uber.org/fx"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 type RouterParams struct {
 	fx.In
 
 	Handlers []Handler `group:"handlers"`
+	Registry Registry
 }
 
 type RouterResult struct {
@@ -30,6 +33,14 @@ func NewRouter(p RouterParams) (RouterResult, error) {
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Page not found", http.StatusNotFound)
 	})
+
+	r.Handle(
+		"/metrics",
+		promhttp.HandlerFor(
+			p.Registry.Registry,
+			promhttp.HandlerOpts{Registry: p.Registry.Registry},
+		),
+	)
 
 	for _, handler := range p.Handlers {
 		if handler.Type() == "GET" {

@@ -10,6 +10,9 @@ import (
 func main() {
 	fx.New(
 		fx.Provide(
+			NewRegistry,
+			NewRequestsCounter,
+			NewRequestsTimer,
 			zap.NewExample,
 			NewHTTPServer,
 			NewRouter,
